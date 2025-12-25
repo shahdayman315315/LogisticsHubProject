@@ -6,7 +6,14 @@ using System.Threading.Tasks;
 
 namespace LogisticsHub.Domain.Enums
 {
-    internal class OrderStatus
+    public enum OrderStatus
     {
+        Pending=1,
+        Confirmed,
+        Processing,
+        Shipped,
+        Delivered,
+        Cancelled,
+        Returned
     }
 }
