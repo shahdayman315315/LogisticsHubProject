@@ -10,18 +10,18 @@ using System.Threading.Tasks;
 
 namespace LogisticsHub.Domain.Entities
 {
-    internal class Order
+    public class Order
     {
         public int Id { get; set; }
 
         [ForeignKey("User")]
-        public string CustomerId {  get; set; }
+        public string CustomerId { get; set; } = null!;
         public ApplicationUser User { get; set; } = null!;
         public OrderStatus? Status { get; set; } = OrderStatus.Pending;
 
         public string ShippingAddress { get; set; } = null!;
         public decimal TotalAmount {  get; set; }
-        public decimal PlatformCommision {  get; set; }
+        public decimal PlatformCommission {  get; set; }
 
         public string? StripeSessionId {  get; set; }
 

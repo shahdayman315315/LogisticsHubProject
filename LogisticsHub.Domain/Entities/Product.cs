@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LogisticsHub.Domain.Entities
 {
-    internal class Product
+    public class Product
     {
         public int Id { get; set; }
 
@@ -21,5 +21,6 @@ namespace LogisticsHub.Domain.Entities
         public Store? Store { get; set; }
         public int CategoryId {  get; set; }
         public Category? Category { get; set; }
-    }
+        public ICollection<OrderItem> orderItems { get; set; }=new List<OrderItem>();
+    } 
 }

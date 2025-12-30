@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace LogisticsHub.API.Controllers
+namespace LogisticsHub.Presentation.Controllers
 {
     [ApiController]
     [Route("[controller]")]

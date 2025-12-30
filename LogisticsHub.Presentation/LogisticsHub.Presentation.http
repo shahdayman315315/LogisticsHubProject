@@ -1,0 +1,6 @@
+@LogisticsHub.Presentation_HostAddress = http://localhost:5021
+
+GET {{LogisticsHub.Presentation_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,5 +1,7 @@
 
-namespace LogisticsHub.API
+using LogisticsHub.Infrastructure.Extensions;
+
+namespace LogisticsHub.Presentation
 {
     public class Program
     {
@@ -13,7 +15,7 @@ namespace LogisticsHub.API
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
+            builder.Services.AddInfrastructureServices(builder.Configuration);
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -24,7 +26,7 @@ namespace LogisticsHub.API
             }
 
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
 

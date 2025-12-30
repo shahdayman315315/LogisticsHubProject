@@ -1,4 +1,4 @@
-namespace LogisticsHub.API
+namespace LogisticsHub.Presentation
 {
     public class WeatherForecast
     {
