@@ -16,9 +16,9 @@ namespace LogisticsHub.Domain.Interfaces.Repositories
         Task<T?> GetFirstAsync(Expression<Func<T, bool>> criteria);
 
         Task AddAsync(T entity);
-        Task UpdateAsync(T entity);
+        void Update(T entity);
 
-        void DeleteAsync(T entity);
+        void Delete(T entity);
 
     }
 }

@@ -10,6 +10,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Identity.Core;
+using LogisticsHub.Domain.Interfaces.Repositories;
+using LogisticsHub.Infrastructure.RepositoriesImplementation;
 namespace LogisticsHub.Infrastructure.Extensions
 {
     public static class ServiceRegisteration
@@ -26,16 +28,26 @@ namespace LogisticsHub.Infrastructure.Extensions
                 options.Password.RequireLowercase = true;
                 options.Password.RequireUppercase = true;
                 options.Password.RequiredUniqueChars = 1;
-                options.Password.RequiredLength = 8; // كفاية دي بدل Length
+                options.Password.RequiredLength = 8; 
 
-                // Lockout settings - لاحظي الحروف الكبيرة والسبيلنج
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5); // يفضل دقائق مش ثواني
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5); 
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.AllowedForNewUsers = true;
 
             })
-            .AddEntityFrameworkStores<AppDbContext>() // ضفنا الأقواس ()
-            .AddDefaultTokenProviders(); // صححنا السبيلنج وضفنا الأقواس ()
+            .AddEntityFrameworkStores<AppDbContext>() 
+            .AddDefaultTokenProviders();
+
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository<>));
+            services.AddScoped<IMerchantRepository, MerchantRepository>();
+            services.AddScoped<IMerchantRepository, MerchantRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IStoreRepository, StoreRepository>();
+            services.AddScoped<ITransactionRepository, TransactionRepository>();
+            services.AddScoped<IWalletRepository, WalletRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IOrderItemRepository, OrderItemRepository>();
 
             return services;
         }

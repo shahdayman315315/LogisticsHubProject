@@ -24,7 +24,7 @@ namespace LogisticsHub.Infrastructure.RepositoriesImplementation
             await _dbSet.AddAsync(entity);
         }
 
-        public void DeleteAsync(T entity)
+        public void Delete(T entity)
         {
             _dbSet.Remove(entity);
         }
@@ -39,19 +39,19 @@ namespace LogisticsHub.Infrastructure.RepositoriesImplementation
             return await  _dbSet.Where(criteria).AsNoTracking().ToListAsync();
         }
 
-        public Task<T?> GetByIdAsync(object id)
+        public async Task<T?> GetByIdAsync(object id)
         {
-            throw new NotImplementedException();
+            return await _dbSet.FindAsync(id);
         }
 
-        public Task<T?> GetFirstAsync(Expression<Func<T, bool>> criteria)
+        public async Task<T?> GetFirstAsync(Expression<Func<T, bool>> criteria)
         {
-            throw new NotImplementedException();
+            return await _dbSet.FirstOrDefaultAsync(criteria);
         }
 
-        public Task UpdateAsync(T entity)
+        public  void Update(T entity)
         {
-            throw new NotImplementedException();
+             _dbSet.Update(entity);
         }
     }
 }
