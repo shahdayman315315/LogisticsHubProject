@@ -1,4 +1,4 @@
-﻿using LogisticsHub.Domain.Interfaces.Repositories;
+﻿using LogisticsHub.Application.Interfaces.Repositories;
 using LogisticsHub.Infrastructure.Data;
 using System;
 using System.Collections.Generic;

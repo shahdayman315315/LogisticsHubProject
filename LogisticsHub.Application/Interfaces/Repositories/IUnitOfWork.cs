@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LogisticsHub.Domain.Interfaces.Repositories
+namespace LogisticsHub.Application.Interfaces.Repositories
 {
     public interface IUnitOfWork : IDisposable
     {
@@ -16,8 +16,7 @@ namespace LogisticsHub.Domain.Interfaces.Repositories
         IStoreRepository StoreRepository { get; }
         ITransactionRepository TransactionRepository { get; }
         IWalletRepository WalletRepository { get; }
-        
-
+        IRefreshTokenRepository RefreshTokenRepository { get; }
         Task<int> CompleteAsync();        
     }
 }

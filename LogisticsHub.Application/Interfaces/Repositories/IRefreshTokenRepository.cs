@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LogisticsHub.Domain.Interfaces.Repositories
+namespace LogisticsHub.Application.Interfaces.Repositories
 {
-    public interface IOrderItemRepository:IGenericRepository<OrderItem>
+    public interface IRefreshTokenRepository:IGenericRepository<RefreshToken>
     {
     }
 }

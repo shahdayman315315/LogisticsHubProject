@@ -1,17 +1,25 @@
-﻿using LogisticsHub.Domain.Entities;
+﻿using LogisticsHub.Application.Helpers;
+using LogisticsHub.Application.Interfaces.Repositories;
+using LogisticsHub.Application.Interfaces.Services;
+using LogisticsHub.Domain.Entities;
+using LogisticsHub.Domain.Helpers;
 using LogisticsHub.Infrastructure.Data;
+using LogisticsHub.Infrastructure.RepositoriesImplementation;
+using LogisticsHub.Infrastructure.ServicesImplementation;
+using MailKit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Identity.Core;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Unicode;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Identity.Core;
-using LogisticsHub.Domain.Interfaces.Repositories;
-using LogisticsHub.Infrastructure.RepositoriesImplementation;
 namespace LogisticsHub.Infrastructure.Extensions
 {
     public static class ServiceRegisteration
@@ -38,6 +46,27 @@ namespace LogisticsHub.Infrastructure.Extensions
             .AddEntityFrameworkStores<AppDbContext>() 
             .AddDefaultTokenProviders();
 
+            var jwtSettings = configuration.GetSection("JWT").Get<JWT>();
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultForbidScheme= JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options=>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer=true,
+                    ValidateAudience=true,
+                    ValidateLifetime=true,
+                    ValidateIssuerSigningKey=true,
+                    ValidIssuer=jwtSettings!.Issuer,
+                    ValidAudience=jwtSettings!.Audiance,
+                    IssuerSigningKey=new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key))
+
+                };
+            }
+            );
+
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository<>));
             services.AddScoped<IMerchantRepository, MerchantRepository>();
@@ -49,6 +78,11 @@ namespace LogisticsHub.Infrastructure.Extensions
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IOrderItemRepository, OrderItemRepository>();
 
+            services.Configure<JWT>(configuration.GetSection("JWT"));
+            services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IAuthService, AuthService>();
             return services;
         }
     }

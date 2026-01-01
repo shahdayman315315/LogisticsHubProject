@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 
-namespace LogisticsHub.Domain.Interfaces.Repositories
+namespace LogisticsHub.Application.Interfaces.Repositories
 {
     public interface ITransactionRepository:IGenericRepository<Transaction>
     {

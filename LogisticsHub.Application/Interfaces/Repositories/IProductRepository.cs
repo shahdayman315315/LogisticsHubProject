@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LogisticsHub.Domain.Interfaces.Repositories
+namespace LogisticsHub.Application.Interfaces.Repositories
 {
     public interface IProductRepository:IGenericRepository<Product>
     {

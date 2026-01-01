@@ -1,4 +1,4 @@
-﻿using LogisticsHub.Domain.Interfaces.Repositories;
+﻿using LogisticsHub.Application.Interfaces.Repositories;
 using LogisticsHub.Infrastructure.Data;
 using System;
 using System.Collections.Generic;
@@ -19,6 +19,7 @@ namespace LogisticsHub.Infrastructure.RepositoriesImplementation
         private Lazy<ITransactionRepository> _transactionRepository;
         private Lazy<IWalletRepository> _walletRepository;
         private Lazy<ICategoryRepository> _categoryRepository;
+        private Lazy<IRefreshTokenRepository> _refreshTokenRepository;
 
 
         public UnitOfWork(AppDbContext context)
@@ -32,6 +33,7 @@ namespace LogisticsHub.Infrastructure.RepositoriesImplementation
             _storeRepository=CreateRepository<IStoreRepository, StoreRepository>();
             _transactionRepository=CreateRepository<ITransactionRepository,TransactionRepository>();
             _walletRepository=CreateRepository<IWalletRepository, WalletRepository>();
+            _refreshTokenRepository=CreateRepository<IRefreshTokenRepository, RefreshTokenRepository>();    
         }
 
         private Lazy<T1> CreateRepository<T1, T2>() where T1 : class where T2:class,T1
@@ -54,6 +56,8 @@ namespace LogisticsHub.Infrastructure.RepositoriesImplementation
         public ITransactionRepository TransactionRepository => _transactionRepository.Value;
 
         public IWalletRepository WalletRepository => _walletRepository.Value;
+
+        public IRefreshTokenRepository RefreshTokenRepository => _refreshTokenRepository.Value;
 
         public Task<int> CompleteAsync()
         {

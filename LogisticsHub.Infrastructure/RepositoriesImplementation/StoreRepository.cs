@@ -1,5 +1,5 @@
 ﻿using LogisticsHub.Domain.Entities;
-using LogisticsHub.Domain.Interfaces.Repositories;
+using LogisticsHub.Application.Interfaces.Repositories;
 using LogisticsHub.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore.Metadata;
 using System;
