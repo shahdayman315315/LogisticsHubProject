@@ -12,5 +12,11 @@ namespace LogisticsHub.Application.Interfaces.Services
         Task<AuthModel> RegisterAsync(RegisterModel model);
 
         Task<AuthModel> LoginAsync(LoginModel model);
+
+        Task<AuthModel> RefreshTokenAsync(RefreshTokenModel model);
+
+        Task ForgetPasswordAsync(ForgetPasswordModel model);
+
+        Task<bool> ResetPasswordAsync(ResetPasswordModel model);
     }
 }

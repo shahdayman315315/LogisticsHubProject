@@ -60,7 +60,7 @@ namespace LogisticsHub.Infrastructure.Extensions
                     ValidateLifetime=true,
                     ValidateIssuerSigningKey=true,
                     ValidIssuer=jwtSettings!.Issuer,
-                    ValidAudience=jwtSettings!.Audiance,
+                    ValidAudience=jwtSettings!.Audience,
                     IssuerSigningKey=new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key))
 
                 };

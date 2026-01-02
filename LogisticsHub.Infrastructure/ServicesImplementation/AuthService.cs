@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,14 +26,16 @@ namespace LogisticsHub.Infrastructure.ServicesImplementation
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IEmailService _emailService;
         public AuthService(UserManager<ApplicationUser> userManager,IOptions<JWT> jwt,AppDbContext context,
-            IMapper mapper, IUnitOfWork unitOfWork)
+            IMapper mapper, IUnitOfWork unitOfWork, IEmailService emailService)
         {
             _context = context;
             _userManager = userManager;
             _jwt = jwt.Value;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
+            _emailService = emailService;
         }
 
         public async Task<AuthModel> RegisterAsync(RegisterModel model)
@@ -82,7 +85,7 @@ namespace LogisticsHub.Infrastructure.ServicesImplementation
 
             var refreshToken = new RefreshToken()
             {
-                Token = new Guid().ToString(),
+                Token = GenerateRefreshToken(),
                 ExpirationDate = DateTime.UtcNow.AddDays(7),
                 UserId = user.Id
             };
@@ -128,7 +131,7 @@ namespace LogisticsHub.Infrastructure.ServicesImplementation
             var jwtSecurityToken = new JwtSecurityToken
                 (
                 issuer: _jwt.Issuer,
-                audience: _jwt.Audiance,
+                audience: _jwt.Audience,
                 claims: jwtClaims,
                 expires: DateTime.UtcNow.AddDays(_jwt.DurationInMinutes),
                 signingCredentials: signingCredentials
@@ -151,7 +154,7 @@ namespace LogisticsHub.Infrastructure.ServicesImplementation
 
             var refreshToken = new RefreshToken()
             {
-                Token = new Guid().ToString(),
+                Token = GenerateRefreshToken(),
                 ExpirationDate = DateTime.UtcNow.AddDays(7),
                 UserId = user!.Id
             };
@@ -166,12 +169,131 @@ namespace LogisticsHub.Infrastructure.ServicesImplementation
             var roles= await _userManager.GetRolesAsync(user!);
             authModel.Role = roles.FirstOrDefault()!;
             authModel.UserName = user!.UserName!;
-            authModel.Message = "Login Successfully";
+            authModel.Message = "Logged in Successfully";
 
             return authModel;
 
         }
 
+        public async Task<AuthModel> RefreshTokenAsync(RefreshTokenModel model)
+        {
+            var authmodel = new AuthModel();
+            var principal = GetPrincipalFromExpiredToken(model.AccessToken);
+            var userId = principal?.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId is null)
+            {
+                authmodel.Message = "Invalid Token";
+                return authmodel;
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user is null)
+            {
+                authmodel.Message = "User Not Found";
+                return authmodel;
+            }
+
+            var storedRefreshToken = user.RefreshTokens.SingleOrDefault(x => x.Token == model.Refreshtoken);
+            if (storedRefreshToken is null || storedRefreshToken.ExpirationDate < DateTime.UtcNow
+                || storedRefreshToken.IsUsed || storedRefreshToken.IRevoked)
+            {
+                authmodel.Message = "Invalid RefreshToken";
+                return authmodel;
+            }
+            storedRefreshToken.IsUsed = true;
+
+            var jwtToken = await GenerateJWTToken(user);
+
+            var RefreshToken = new RefreshToken()
+            {
+                Token = GenerateRefreshToken(),
+                UserId = user.Id,
+                ExpirationDate = DateTime.UtcNow.AddDays(7),
+                IsUsed = false,
+                IRevoked = false
+            };
+
+            await _unitOfWork.RefreshTokenRepository.AddAsync(RefreshToken);
+            await _unitOfWork.CompleteAsync();
+
+            authmodel.IsAuthenticated= true;
+            authmodel.Token=new JwtSecurityTokenHandler().WriteToken(jwtToken);
+            authmodel.RefreshToken = RefreshToken.Token;
+            authmodel.ExpirationDate = jwtToken.ValidTo;
+            authmodel.UserName = user.UserName!;
+
+            return authmodel;
+        }
+        private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+        {
+            var tokenValidationParameters = new TokenValidationParameters()
+            {
+                ValidateIssuer=true,
+                ValidateAudience=true,
+                ValidateIssuerSigningKey = true,
+                ValidateLifetime = false, 
+                ValidIssuer = _jwt.Issuer,
+                ValidAudience = _jwt.Audience,
+                IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(_jwt.Key))
+            };
+
+            var tokenHandler=new JwtSecurityTokenHandler();
+
+            SecurityToken securityToken;
+            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
+
+            var jwtSecurityToken=securityToken as JwtSecurityToken;
+            if (jwtSecurityToken is null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256,
+                    StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new SecurityTokenException("Invalid Token");
+            }
+
+            return principal;
+        }
+
+        private static string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[64]; // 512 bits
+
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+
+            return Convert.ToBase64String(randomNumber);
+        }
+
+        public async Task ForgetPasswordAsync(ForgetPasswordModel model)
+        {
+            var user=await _userManager.FindByEmailAsync(model.Email);
+
+            if(user is null)
+            {
+                return;
+            }
+
+            var resetToken=await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            var resetLink = $"https://localhost:7002/api/auth/resetpassword?email={model.Email}&token={Uri.EscapeDataString(resetToken)}";
         
+            await _emailService.SendEmailAsync(model.Email, "Reset Your Password",
+            $"Click here to reset your password: <a href='{resetLink}'>Reset Password</a>"
+            );
+        }
+
+        public async Task<bool> ResetPasswordAsync(ResetPasswordModel model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+
+            if(user is null)
+            {
+                return false;
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
+
+            return result.Succeeded;
+        }
     }
 }

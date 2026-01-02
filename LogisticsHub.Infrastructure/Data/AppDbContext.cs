@@ -41,6 +41,9 @@ namespace LogisticsHub.Infrastructure.Data
 
                     entity.HasOne(e=>e.Wallet).WithOne(w=>w.User).HasForeignKey<Wallet>(w=>w.UserId)
                     .OnDelete(DeleteBehavior.Cascade);
+
+                    entity.HasMany(e=>e.RefreshTokens).WithOne(r=>r.User).HasForeignKey(r=>r.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
                 }
             );
 

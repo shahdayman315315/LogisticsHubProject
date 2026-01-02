@@ -14,5 +14,6 @@ namespace LogisticsHub.Domain.Entities
         public Wallet? Wallet { get; set; }
 
         public ICollection<Order> Orders { get; set; }=new List<Order>();
+        public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
     }
 }
