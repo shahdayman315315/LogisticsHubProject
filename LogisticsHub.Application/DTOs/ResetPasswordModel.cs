@@ -9,10 +9,10 @@ namespace LogisticsHub.Application.DTOs
 {
     public class ResetPasswordModel
     {
-        [Required,EmailAddress]
+        [EmailAddress]
         public string Email { get; set; } = null!;
 
-        [Required]
+        
         public string Token { get; set; } = null!;
 
         [Required,DataType(DataType.Password)]

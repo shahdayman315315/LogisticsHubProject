@@ -68,21 +68,15 @@ namespace LogisticsHub.Infrastructure.Extensions
             );
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository<>));
-            services.AddScoped<IMerchantRepository, MerchantRepository>();
-            services.AddScoped<IMerchantRepository, MerchantRepository>();
-            services.AddScoped<IProductRepository, ProductRepository>();
-            services.AddScoped<IStoreRepository, StoreRepository>();
-            services.AddScoped<ITransactionRepository, TransactionRepository>();
-            services.AddScoped<IWalletRepository, WalletRepository>();
-            services.AddScoped<IOrderRepository, OrderRepository>();
-            services.AddScoped<IOrderItemRepository, OrderItemRepository>();
+               
 
             services.Configure<JWT>(configuration.GetSection("JWT"));
             services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IProductService, ProductService>();
+            services.AddMemoryCache();
             return services;
         }
     }

@@ -2,6 +2,7 @@
 using LogisticsHub.Domain.Entities;
 using LogisticsHub.Infrastructure.Data;
 using LogisticsHub.Infrastructure.Migrations;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,12 @@ namespace LogisticsHub.Infrastructure.RepositoriesImplementation
         public RefreshTokenRepository(AppDbContext context):base(context) 
         {
             _context = context;
+        }
+
+        public async Task<RefreshToken> GetUserRefreshTokenAsync(string UserId,string refreshtoken)
+        {
+            
+            return await _context.RefreshTokens.SingleOrDefaultAsync(r=>r.Token==refreshtoken&&r.UserId==UserId);
         }
     }
 }

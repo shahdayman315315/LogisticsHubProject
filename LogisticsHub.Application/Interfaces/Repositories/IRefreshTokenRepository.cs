@@ -9,5 +9,6 @@ namespace LogisticsHub.Application.Interfaces.Repositories
 {
     public interface IRefreshTokenRepository:IGenericRepository<RefreshToken>
     {
+        Task<RefreshToken> GetUserRefreshTokenAsync(string UserId,string refreshtoken);
     }
 }

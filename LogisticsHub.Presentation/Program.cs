@@ -1,11 +1,15 @@
 
+using LogisticsHub.Domain.Entities;
+using LogisticsHub.Infrastructure.Data;
 using LogisticsHub.Infrastructure.Extensions;
+using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
 
 namespace LogisticsHub.Presentation
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +22,15 @@ namespace LogisticsHub.Presentation
             builder.Services.AddInfrastructureServices(builder.Configuration);
             var app = builder.Build();
 
+            using(var scope=app.Services.CreateScope())
+            {
+                var UserManager=scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                var RoleManager=scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+                await DataSeeder.SeedRolesAsync(RoleManager);
+                await DataSeeder.SeedAdminAsync(UserManager);
+
+            }
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {

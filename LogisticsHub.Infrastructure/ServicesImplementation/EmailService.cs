@@ -39,7 +39,7 @@ namespace LogisticsHub.Infrastructure.ServicesImplementation
                 try
                 {
                     // Use SSL (true) as in your provided logic
-                    await client.ConnectAsync(_mailSettings.SmtpServer, _mailSettings.Port, true);
+                    await client.ConnectAsync(_mailSettings.SmtpServer, _mailSettings.Port, SecureSocketOptions.StartTls);
                     client.AuthenticationMechanisms.Remove("XOAUTH2");
                     await client.AuthenticateAsync(_mailSettings.Username, _mailSettings.Password);
                     await client.SendAsync(email);

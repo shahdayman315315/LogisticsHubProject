@@ -194,7 +194,7 @@ namespace LogisticsHub.Infrastructure.ServicesImplementation
                 return authmodel;
             }
 
-            var storedRefreshToken = user.RefreshTokens.SingleOrDefault(x => x.Token == model.Refreshtoken);
+            var storedRefreshToken =await _unitOfWork.RefreshTokenRepository.GetUserRefreshTokenAsync(userId,model.Refreshtoken);
             if (storedRefreshToken is null || storedRefreshToken.ExpirationDate < DateTime.UtcNow
                 || storedRefreshToken.IsUsed || storedRefreshToken.IRevoked)
             {
