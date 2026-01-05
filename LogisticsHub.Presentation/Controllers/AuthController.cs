@@ -19,10 +19,6 @@ namespace LogisticsHub.Presentation.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterModel model)
         {
-            if(!ModelState.IsValid)
-            {
-                return BadRequest(model);
-            }
 
             var result=await _authService.RegisterAsync(model);
 
@@ -36,11 +32,7 @@ namespace LogisticsHub.Presentation.Controllers
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(model);
-            }
+        {           
 
             var result= await _authService.LoginAsync(model);
 
@@ -55,10 +47,7 @@ namespace LogisticsHub.Presentation.Controllers
         [HttpPost("RefreshToken")]
         public async Task<IActionResult> RefreshToken(RefreshTokenModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(model);
-            }
+           
             var result=await _authService.RefreshTokenAsync(model);
 
             if (!result.IsAuthenticated)
@@ -72,10 +61,6 @@ namespace LogisticsHub.Presentation.Controllers
         [HttpPost("ForgetPassword")]
         public async Task<IActionResult> ForgetPassword(ForgetPasswordModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(model);
-            }
             
             await _authService.ForgetPasswordAsync(model);
 
@@ -86,10 +71,6 @@ namespace LogisticsHub.Presentation.Controllers
         [HttpPost("ResetPassword")]
         public async Task<IActionResult> ResetPassword(ResetPasswordModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(model);
-            }
 
             var result=await _authService.ResetPasswordAsync(model);
 

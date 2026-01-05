@@ -2,6 +2,7 @@
 using LogisticsHub.Domain.Entities;
 using LogisticsHub.Infrastructure.Data;
 using LogisticsHub.Infrastructure.Extensions;
+using LogisticsHub.Presentation.Middlewares;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 
@@ -22,6 +23,8 @@ namespace LogisticsHub.Presentation
             builder.Services.AddInfrastructureServices(builder.Configuration);
             var app = builder.Build();
 
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
+
             using(var scope=app.Services.CreateScope())
             {
                 var UserManager=scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
@@ -39,6 +42,7 @@ namespace LogisticsHub.Presentation
             }
 
             app.UseHttpsRedirection();
+            app.UseSession();
             app.UseAuthentication();
             app.UseAuthorization();
 
