@@ -1,5 +1,6 @@
 ﻿using LogisticsHub.Application.Interfaces.Repositories;
 using LogisticsHub.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,6 +68,11 @@ namespace LogisticsHub.Infrastructure.RepositoriesImplementation
         public void Dispose()
         {
             _context.Dispose();
+        }
+
+        public async Task<IDbContextTransaction> BeginTransactionAsync()
+        {
+            return await _context.Database.BeginTransactionAsync();
         }
     }
 }

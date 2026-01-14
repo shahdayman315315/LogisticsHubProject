@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace LogisticsHub.Infrastructure.RepositoriesImplementation
 {
@@ -17,5 +18,9 @@ namespace LogisticsHub.Infrastructure.RepositoriesImplementation
             _context = context;
         }
 
+        public async Task<Order> GetOrderWithDetailsAsync(int orderId, string userId)
+        {
+            return await _context.Orders.Include(o=>o.OrderItems).FirstOrDefaultAsync(o=>o.Id==orderId);
+        }
     }
 }
