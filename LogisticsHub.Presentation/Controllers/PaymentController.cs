@@ -61,32 +61,12 @@ namespace LogisticsHub.Presentation.Controllers
             return Ok(result.Data);
         }
 
-        [HttpPost("webhook")]
-        public async Task<IActionResult> StripeWebHook()
+
+        [HttpGet("cancel")]
+        public IActionResult CancelPayment(int orderId)
         {
-            var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
-
-            var stripeSignature = Request.Headers["Stripe-Signature"];
-
-            var endpointSecret = "";
-
-            try
-            {
-                var stripeEvent = EventUtility.ConstructEvent(json, stripeSignature, endpointSecret);
-
-                if (stripeEvent.Type ==Events.CheckoutSessionCompleted)
-                {
-                    var session = stripeEvent.Data.Object as Stripe.Checkout.Session;
-
-                    await _paymentService.CheckPaymentAsync(session.Id);
-                }
-
-                return Ok(); 
-            }
-            catch (StripeException e)
-            {
-                return BadRequest(); 
-            }
+            
+            return Ok(new { Message = "Payment cancelled by user.", OrderId = orderId });
         }
     }
     
