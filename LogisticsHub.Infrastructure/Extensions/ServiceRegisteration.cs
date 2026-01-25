@@ -71,6 +71,7 @@ namespace LogisticsHub.Infrastructure.Extensions
                
 
             services.Configure<JWT>(configuration.GetSection("JWT"));
+            services.Configure<StripeSettings>(configuration.GetSection("StripeSettings"));
             services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddScoped<IEmailService, EmailService>();
@@ -78,6 +79,8 @@ namespace LogisticsHub.Infrastructure.Extensions
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICartService, CartService>();
             services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IPaymentService, PaymentService>();
+
             services.AddHttpContextAccessor();
             services.AddDistributedMemoryCache();
 
