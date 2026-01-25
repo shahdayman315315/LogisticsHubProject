@@ -30,7 +30,7 @@ namespace LogisticsHub.Domain.Entities
         [Timestamp]
         public byte[] RowVersion { get; set; } = null!;
 
-        public ICollection<OrderItem> OrderItems = new List<OrderItem>();
+        public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
     }
 }

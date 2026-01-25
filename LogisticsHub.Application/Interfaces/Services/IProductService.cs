@@ -11,7 +11,7 @@ namespace LogisticsHub.Application.Interfaces.Services
 {
     public interface IProductService
     {
-        Task<ServiceResult<ProductAddDto>> AddProductAsync(ProductAddDto product);
+        Task<ServiceResult<Product>> AddProductAsync(ProductAddDto product);
         Task<ServiceResult<IEnumerable<ProductDto>>> GetAllProductsAsync();
         Task<ServiceResult<ProductDto>> UpdateProductAsync(ProductDto product);
         Task<ServiceResult<bool>> DeleteProductAsync(int productId);

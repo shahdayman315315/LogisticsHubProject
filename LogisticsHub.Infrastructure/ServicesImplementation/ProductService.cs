@@ -27,28 +27,28 @@ namespace LogisticsHub.Infrastructure.ServicesImplementation
             _memoryCache = memoryCache;
             _unitOfWork = unitOfWork;
         }
-        public async Task<ServiceResult<ProductAddDto>> AddProductAsync(ProductAddDto productdto)
+        public async Task<ServiceResult<Product>> AddProductAsync(ProductAddDto productdto)
         {
             var existProduct=await _unitOfWork.ProductRepository.GetFirstAsync(
                 p=>p.Name.Trim().ToLower()==productdto.Name.Trim().ToLower());
 
             if (existProduct is not null) 
             {
-                return ServiceResult<ProductAddDto>.Failure("Product already exists.");
+                return ServiceResult<Product>.Failure("Product already exists.");
 
             }
             var existStore= await _unitOfWork.StoreRepository.GetByIdAsync(productdto.StoreId);
 
             if(existStore is null)
             {
-                return ServiceResult<ProductAddDto>.Failure("Store doesn't exist.");
+                return ServiceResult<Product>.Failure("Store doesn't exist.");
             }
 
             var existCategory=await _unitOfWork.CategoryRepository.GetByIdAsync(productdto.CategoryId);
 
             if(existCategory is null)
             {
-                return ServiceResult<ProductAddDto>.Failure("Category doesn't exist.");
+                return ServiceResult<Product>.Failure("Category doesn't exist.");
             }
 
             var product = _mapper.Map<Product>(productdto);
@@ -57,7 +57,7 @@ namespace LogisticsHub.Infrastructure.ServicesImplementation
 
             _memoryCache.Remove(ProductsCachKey);
 
-            return ServiceResult<ProductAddDto>.Success(productdto);
+            return ServiceResult<Product>.Success(product);
 
         }
 

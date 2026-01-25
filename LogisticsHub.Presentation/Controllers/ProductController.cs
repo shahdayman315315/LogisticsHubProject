@@ -1,4 +1,5 @@
-﻿using LogisticsHub.Application.DTOs;
+﻿using AutoMapper;
+using LogisticsHub.Application.DTOs;
 using LogisticsHub.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -12,9 +13,11 @@ namespace LogisticsHub.Presentation.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
-        public ProductController(IProductService productService)
+        private readonly IMapper _mapper;
+        public ProductController(IProductService productService, IMapper mapper)
         {
             _productService = productService;
+            _mapper = mapper;
         }
 
 
@@ -51,7 +54,8 @@ namespace LogisticsHub.Presentation.Controllers
                 return BadRequest(result.Message);
             }
 
-            return CreatedAtAction("Product Addition",result.Data);
+            var productdto=_mapper.Map<ProductDto>(result.Data);
+            return CreatedAtAction(nameof(GetById),new { id=result.Data!.Id },productdto);
         }
 
 

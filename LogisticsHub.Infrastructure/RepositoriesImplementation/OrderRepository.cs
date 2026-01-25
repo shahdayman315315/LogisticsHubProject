@@ -20,7 +20,7 @@ namespace LogisticsHub.Infrastructure.RepositoriesImplementation
 
         public async Task<Order> GetOrderWithDetailsAsync(int orderId, string userId)
         {
-            return await _context.Orders.Include(o=>o.OrderItems).FirstOrDefaultAsync(o=>o.Id==orderId);
+            return await _context.Orders.Include(o=>o.OrderItems).ThenInclude(oi=>oi.Product).FirstOrDefaultAsync(o=>o.Id==orderId);
         }
     }
 }

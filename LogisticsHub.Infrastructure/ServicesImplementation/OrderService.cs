@@ -30,7 +30,7 @@ namespace LogisticsHub.Infrastructure.ServicesImplementation
 
             if (existOrder is null)
             {
-                return ServiceResult<bool>.Failure("Order is not found");
+                return ServiceResult<bool>.Failure("Order is not found",404);
             }
 
             if(existOrder.Status != OrderStatus.Pending)
@@ -67,17 +67,16 @@ namespace LogisticsHub.Infrastructure.ServicesImplementation
         }
 
         
-        //payment?wallet?transaction?
-        //dispose ?
-        public async Task<ServiceResult<int>> CreateOrderAsync(string userId, string shippingAddress) //checkout order
+     
+        public async Task<ServiceResult<Order>> CreateOrderAsync(string userId, OrderDetailsDto orderDto) //checkout order
         {
             //get user cart
             var result = await _cartService.GetCartAsync();
             var cart=result.Data;
 
-            if (cart!.CartItems.Any())
+            if (!cart!.CartItems.Any())
             {
-                return ServiceResult<int>.Failure("Cart is Empty !");
+                return ServiceResult<Order>.Failure("Cart is Empty !");
             }
 
             using var transaction=await _unitOfWork.BeginTransactionAsync();
@@ -85,7 +84,7 @@ namespace LogisticsHub.Infrastructure.ServicesImplementation
             {
                 var order = new Order
                 {
-                    ShippingAddress = shippingAddress,
+                    ShippingAddress = orderDto.ShippingAddress,
                     TotalAmount = cart.TotalItemsPrice,
                     CustomerId = userId,
                     CreatedAt = DateTime.UtcNow
@@ -99,7 +98,7 @@ namespace LogisticsHub.Infrastructure.ServicesImplementation
 
                     if (existproduct!.StockQuantity < item.Quantity)
                     {
-                        return ServiceResult<int>.Failure($"Unavaiable Stock Quantity for {existproduct.Name}.");
+                        return ServiceResult<Order>.Failure($"Unavaiable Stock Quantity for {existproduct.Name}.");
                     }
 
                     var orderItem = new OrderItem
@@ -133,13 +132,13 @@ namespace LogisticsHub.Infrastructure.ServicesImplementation
                 //successfull transaction 
                 await transaction.CommitAsync();
 
-                return ServiceResult<int>.Success(order.Id);
+                return ServiceResult<Order>.Success(order);
             }
 
             catch(Exception ex)
             {
                 await transaction.RollbackAsync();
-                return ServiceResult<int>.Failure(ex.Message);
+                return ServiceResult<Order>.Failure(ex.Message);
             }
         }
 
@@ -177,7 +176,7 @@ namespace LogisticsHub.Infrastructure.ServicesImplementation
 
             if(existOrder is null)
             {
-                return ServiceResult<bool>.Failure("Order is not found");
+                return ServiceResult<bool>.Failure("Order is not found",404);
             }
 
             if((existOrder.Status==OrderStatus.Delivered)|| (existOrder.Status == OrderStatus.Cancelled))

@@ -50,7 +50,7 @@ namespace LogisticsHub.Presentation.Controllers
         }
 
 
-        [HttpDelete("Remove{id}")]
+        [HttpDelete("Remove/{id}")]
         public async Task<IActionResult> RemoveItem(int id)
         {
             var result=await _cartService.RemoveItemAsync(id);

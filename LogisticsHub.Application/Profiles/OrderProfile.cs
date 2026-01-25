@@ -16,6 +16,8 @@ namespace LogisticsHub.Application.Profiles
             CreateMap<Order, OrderDto>().ReverseMap();
             
             CreateMap<Order,OrderDetailsDto>().ReverseMap();
+
+            CreateMap<OrderItem, OrderItemDto>().ReverseMap();
         }
     }
 }

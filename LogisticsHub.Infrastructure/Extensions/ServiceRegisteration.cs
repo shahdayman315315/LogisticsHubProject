@@ -77,6 +77,7 @@ namespace LogisticsHub.Infrastructure.Extensions
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICartService, CartService>();
+            services.AddScoped<IOrderService, OrderService>();
             services.AddHttpContextAccessor();
             services.AddDistributedMemoryCache();
 
