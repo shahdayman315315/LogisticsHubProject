@@ -61,12 +61,12 @@ namespace LogisticsHub.Infrastructure.ServicesImplementation
                     PaymentMethodTypes = new List<string> { "card" },
                     LineItems = lineItems,
                     Mode = "payment",
-                    SuccessUrl = "https://localhost:7002/api/payment/checkpayment?sessionId={CHECKOUT_SESSION_ID}",
-                    CancelUrl = "https://localhost:7002/api/payment/cancel?orderId={order.Id}",
+                    SuccessUrl = "http://localhost:3000/payment-success?sessionId={CHECKOUT_SESSION_ID}",
+                    CancelUrl = $"http://localhost:3000/payment-cancel?orderId={order.Id}",
                     Metadata = new Dictionary<string, string>
-                {
-                  { "OrderId", order.Id.ToString() }
-                }
+                    {
+                      { "OrderId", order.Id.ToString() }
+                    }
                 };
 
                 var service = new SessionService();

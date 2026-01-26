@@ -1,5 +1,6 @@
 ﻿using LogisticsHub.Application.Interfaces.Repositories;
 using LogisticsHub.Application.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
@@ -7,18 +8,15 @@ using Stripe;
 using Stripe.Checkout;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Security.Claims;
 
 namespace LogisticsHub.Presentation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PaymentController : ControllerBase
     {
-        
-
-        //order stripe id ?
-        //order services ??
-        //url &controller ??
 
         private readonly IPaymentService _paymentService;
         private readonly IUnitOfWork _unitOfWork;
@@ -31,7 +29,8 @@ namespace LogisticsHub.Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> CreatePaymentSession(int OrderId)
         {
-            var order=await _unitOfWork.OrderRepository.GetByIdAsync(OrderId);
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)!.Value;
+            var order =await _unitOfWork.OrderRepository.GetOrderWithDetailsAsync(OrderId,userId.ToString());
 
             if(order is null)
             {
@@ -62,12 +61,6 @@ namespace LogisticsHub.Presentation.Controllers
         }
 
 
-        [HttpGet("cancel")]
-        public IActionResult CancelPayment(int orderId)
-        {
-            
-            return Ok(new { Message = "Payment cancelled by user.", OrderId = orderId });
-        }
     }
     
 }
