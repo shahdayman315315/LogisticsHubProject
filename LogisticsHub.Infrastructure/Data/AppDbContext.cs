@@ -22,6 +22,8 @@ namespace LogisticsHub.Infrastructure.Data
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<Wallet> Wallets { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+
+        public DbSet<WithDrawalRequest> WithDrawalRequests { get; set; }
         protected override void OnModelCreating(ModelBuilder modelbuilder)
         {
             base.OnModelCreating(modelbuilder);
@@ -177,6 +179,9 @@ namespace LogisticsHub.Infrastructure.Data
                 entity.ToTable(t => t.HasCheckConstraint("CK_AmountValue", "[Amount] >= 0"));
 
             });
+
+            modelbuilder.Entity<WithDrawalRequest>().HasOne(wd=>wd.Wallet).WithMany()
+                .HasForeignKey(wd=>wd.WalletId).OnDelete(DeleteBehavior.Cascade);
         }
 
 

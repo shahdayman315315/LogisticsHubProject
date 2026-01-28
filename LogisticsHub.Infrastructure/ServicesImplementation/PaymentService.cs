@@ -114,9 +114,44 @@ namespace LogisticsHub.Infrastructure.ServicesImplementation
             order.StripeSessionId=sesstionId;
 
             _unitOfWork.OrderRepository.Update(order);
+            await UpdateMerchantWalletAsync(order);
+
             await _unitOfWork.CompleteAsync();
 
             return ServiceResult<Order>.Success(order);
+        }
+
+
+        public async Task UpdateMerchantWalletAsync(Order order)
+        {
+
+
+            var storeId = order.OrderItems.FirstOrDefault()!.Product!.StoreId;
+
+            var merchantId=(await _unitOfWork.StoreRepository.GetByIdAsync(storeId)).MerchantId;
+
+
+            var userIdForMerchant= (await _unitOfWork.MerchantRepository.GetByIdAsync(merchantId)).UserId;
+
+            var wallet=await _unitOfWork.WalletRepository.GetFirstAsync(w=>w.UserId== userIdForMerchant);
+
+            var merchantShare = order.TotalAmount - order.PlatformCommission;
+
+            wallet!.Balance += merchantShare;
+
+            var transaction = new Transaction
+            {
+                Wallet = wallet,
+                Amount = merchantShare,
+                Description = $"New Deposite -> {merchantShare}",
+                ExternalReferenceId = order.StripeSessionId,
+                CreatedAt = DateTime.UtcNow,
+                Type = TransactionType.Deposite
+            };
+
+            await _unitOfWork.TransactionRepository.AddAsync(transaction);
+   
+
         }
 
     }

@@ -16,6 +16,8 @@ namespace LogisticsHub.Domain.Entities
         public ApplicationUser User { get; set; }=null!;
         public ICollection<Transaction> Transactions { get; set; }=new List<Transaction>();
 
+        public ICollection<WithDrawalRequest> WithdrawalRequests { get; set; }= new List<WithDrawalRequest>();
+
         [Timestamp]
         public byte[] RowVersion { get; set; } = null!;
 

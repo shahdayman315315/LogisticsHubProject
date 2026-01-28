@@ -14,5 +14,7 @@ namespace LogisticsHub.Application.DTOs
         public DateTime CreatedAt { get; set; }
         public OrderStatus Status { get; set; }
         public int TotalAmount {  get; set; }
+        public decimal PlatformCommission { get; set; }
+
     }
 }

@@ -1,5 +1,4 @@
 ﻿using LogisticsHub.Domain.Entities;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,8 +7,7 @@ using System.Threading.Tasks;
 
 namespace LogisticsHub.Application.Interfaces.Repositories
 {
-    public interface IWalletRepository:IGenericRepository<Wallet>
+    public interface IWithdrawalRequestsRepository:IGenericRepository<WithDrawalRequest>
     {
-        Task<Wallet> GetWalletWithTransactionsAsync(String userId);
     }
 }
