@@ -77,7 +77,14 @@ namespace LogisticsHub.Infrastructure.ServicesImplementation
                     IsVerified = true
                 };
 
+                var wallet = new Wallet
+                {
+                    User = user,
+                    Balance = 0
+                };
+
                await _unitOfWork.MerchantRepository.AddAsync(merchant);
+               await _unitOfWork.WalletRepository.AddAsync(wallet);
                await _unitOfWork.CompleteAsync();
             }
 

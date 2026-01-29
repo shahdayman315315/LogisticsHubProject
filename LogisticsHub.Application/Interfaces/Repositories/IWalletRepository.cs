@@ -11,5 +11,7 @@ namespace LogisticsHub.Application.Interfaces.Repositories
     public interface IWalletRepository:IGenericRepository<Wallet>
     {
         Task<Wallet> GetWalletWithTransactionsAsync(String userId);
+
+        Task<IEnumerable<Transaction>> GetWalletTransactionsAsync(int walletId,int pageNumber,int pageSize);
     }
 }

@@ -18,9 +18,15 @@ namespace LogisticsHub.Infrastructure.RepositoriesImplementation
             _context = context;
         }
 
+        public async Task<IEnumerable<Transaction>> GetWalletTransactionsAsync(int walletId, int pageNumber, int pageSize)
+        {
+            return await _context.Transactions.Where(t => t.WalletId == walletId).OrderByDescending(t=>t.CreatedAt)
+                .Skip((pageNumber-1)*pageSize).Take(pageSize).AsNoTracking().ToListAsync();
+        }
+
         public async Task<Wallet> GetWalletWithTransactionsAsync(string userId)
         {
-            return await _context.Wallets.Include(w => w.Transactions).FirstOrDefaultAsync(w=>w.UserId==userId);
+            return await _context.Wallets.Include(w => w.Transactions.Take(5)).FirstOrDefaultAsync(w=>w.UserId==userId);
         }
     }
 }

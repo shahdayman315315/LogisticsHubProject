@@ -21,6 +21,7 @@ namespace LogisticsHub.Infrastructure.RepositoriesImplementation
         private Lazy<IWalletRepository> _walletRepository;
         private Lazy<ICategoryRepository> _categoryRepository;
         private Lazy<IRefreshTokenRepository> _refreshTokenRepository;
+        private Lazy<IWithdrawalRequestsRepository> _withdrawalRequestsRepository;
 
 
         public UnitOfWork(AppDbContext context)
@@ -35,6 +36,7 @@ namespace LogisticsHub.Infrastructure.RepositoriesImplementation
             _transactionRepository=CreateRepository<ITransactionRepository,TransactionRepository>();
             _walletRepository=CreateRepository<IWalletRepository, WalletRepository>();
             _refreshTokenRepository=CreateRepository<IRefreshTokenRepository, RefreshTokenRepository>();    
+            _withdrawalRequestsRepository=CreateRepository<IWithdrawalRequestsRepository,WithdrawalRequestRepository>();
         }
 
         private Lazy<T1> CreateRepository<T1, T2>() where T1 : class where T2:class,T1
@@ -59,6 +61,8 @@ namespace LogisticsHub.Infrastructure.RepositoriesImplementation
         public IWalletRepository WalletRepository => _walletRepository.Value;
 
         public IRefreshTokenRepository RefreshTokenRepository => _refreshTokenRepository.Value;
+
+        public IWithdrawalRequestsRepository withdrawalRequestsRepository => _withdrawalRequestsRepository.Value;
 
         public Task<int> CompleteAsync()
         {

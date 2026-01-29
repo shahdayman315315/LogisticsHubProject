@@ -38,5 +38,30 @@ namespace LogisticsHub.Presentation.Controllers
 
             return Ok(walletDto);
         }
+
+
+        [HttpGet("Transactions")]
+        public async Task<IActionResult> GetWalletTransactions([FromQuery]int pageNumber,[FromQuery]int pageSize)
+        {
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)!.Value;
+
+            var wallet = await _unitOfWork.WalletRepository.GetWalletWithTransactionsAsync(userId);
+
+            if (wallet is null)
+            {
+                return NotFound("Wallet is not found");
+            }
+
+            var transactions=await _unitOfWork.WalletRepository.GetWalletTransactionsAsync(wallet.Id,pageNumber,pageSize);
+
+            if (!transactions.Any())
+            {
+                return NotFound("No Transactions was found for this wallet ");
+            }
+
+            var transactionDtos=_mapper.Map<TransactionDto>(transactions);
+
+            return Ok(transactionDtos);
+        }
     }
 }

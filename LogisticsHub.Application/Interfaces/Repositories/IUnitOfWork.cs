@@ -20,6 +20,7 @@ namespace LogisticsHub.Application.Interfaces.Repositories
         IWalletRepository WalletRepository { get; }
         IRefreshTokenRepository RefreshTokenRepository { get; }
 
+        IWithdrawalRequestsRepository WithdrawalRequestsRepository { get; }
         Task<IDbContextTransaction> BeginTransactionAsync();
         
         Task<int> CompleteAsync();        
