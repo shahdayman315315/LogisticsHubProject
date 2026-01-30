@@ -124,6 +124,12 @@ namespace LogisticsHub.Presentation.Controllers
                 return NotFound("Store is not found");
             }
 
+            if (existStore.Name == dto.Name)
+            {
+             
+                return BadRequest("This Store Name already exists");
+               
+            }
             if (!User.IsInRole("Admin"))
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
