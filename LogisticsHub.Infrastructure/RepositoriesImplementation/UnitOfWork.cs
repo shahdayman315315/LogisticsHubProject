@@ -62,7 +62,8 @@ namespace LogisticsHub.Infrastructure.RepositoriesImplementation
 
         public IRefreshTokenRepository RefreshTokenRepository => _refreshTokenRepository.Value;
 
-        public IWithdrawalRequestsRepository withdrawalRequestsRepository => _withdrawalRequestsRepository.Value;
+        public IWithdrawalRequestsRepository WithdrawalRequestsRepository => _withdrawalRequestsRepository.Value;
+
 
         public Task<int> CompleteAsync()
         {

@@ -1,4 +1,5 @@
-﻿using LogisticsHub.Application.DTOs;
+﻿using AutoMapper;
+using LogisticsHub.Application.DTOs;
 using LogisticsHub.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -15,14 +16,16 @@ namespace LogisticsHub.Presentation.Controllers
     public class WithdrawalRequestController : ControllerBase
     {
         private readonly IWithdrawalRequestService _withdrawalRequestService;
-        public WithdrawalRequestController(IWithdrawalRequestService withdrawalRequestService)
+        private readonly IMapper _mapper;
+        public WithdrawalRequestController(IWithdrawalRequestService withdrawalRequestService, IMapper mapper)
         {
             _withdrawalRequestService = withdrawalRequestService;
+            _mapper = mapper;
         }
 
 
         [HttpPost("Request")]
-        public async Task<IActionResult> CreateRequest(WithdrawaRequestDto requestDto,[FromBody]string regectionReason)
+        public async Task<IActionResult> CreateRequest(WithdrawaRequestDto requestDto,[FromQuery] string regectionReason)
         {
             var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)!.Value;
 
@@ -38,39 +41,42 @@ namespace LogisticsHub.Presentation.Controllers
                 return BadRequest(result.Message);
             }
 
-            return Ok(result.Data);
+            var dtos=_mapper.Map<WithdrawaRequestDto>(result.Data);
+            return Ok(dtos);
         }
 
 
         [HttpPost("{id}/Approve")]
         [Authorize(Roles = "Admin")]
 
-        public async Task<IActionResult> Approve(int requestId, [FromBody]string AdminComment, [FromBody]string externalReferenceId)
+        public async Task<IActionResult> Approve(int id, [FromQuery]string AdminComment, [FromQuery]string externalReferenceId)
         {
-            var result=await _withdrawalRequestService.ApproveWithdrawalRequest(requestId, AdminComment??null, externalReferenceId??null);
+            var result=await _withdrawalRequestService.ApproveWithdrawalRequest(id, AdminComment??null, externalReferenceId??null);
         
             if (!result.IsSuccess)
             {
                 return BadRequest(result.Message);
             }
 
-            return Ok(result.Data);
+            var dtos = _mapper.Map<WithdrawaRequestDto>(result.Data);
+            return Ok(dtos);
         }
 
 
         [HttpPost("{id}/Reject")]
         [Authorize(Roles = "Admin")]
 
-        public async Task<IActionResult> Reject(int requestId, [FromBody]string rejectionReason)
+        public async Task<IActionResult> Reject(int id, [FromBody]string rejectionReason)
         {
-            var result=await _withdrawalRequestService.RejectWithdrawalRequest(requestId, rejectionReason??null);
+            var result=await _withdrawalRequestService.RejectWithdrawalRequest(id, rejectionReason??null);
 
             if (!result.IsSuccess)
             {
                 return BadRequest(result.Message);
             }
 
-            return Ok(result.Data);
+            var dtos = _mapper.Map<WithdrawaRequestDto>(result.Data);
+            return Ok(dtos);
         }
 
 
@@ -89,7 +95,8 @@ namespace LogisticsHub.Presentation.Controllers
                 return BadRequest(result.Message);
             }
 
-            return Ok(result.Data);
+            var dtos = _mapper.Map<WithdrawaRequestDto>(result.Data);
+            return Ok(dtos);
         }
     }
 }

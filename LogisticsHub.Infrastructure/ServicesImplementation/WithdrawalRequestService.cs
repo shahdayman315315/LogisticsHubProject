@@ -46,7 +46,8 @@ namespace LogisticsHub.Infrastructure.ServicesImplementation
                 Amount = request.Amount,
                 DestinationDetails = request.DestinationDetails,
                 PaymentMethod = request.PaymentMethod,
-                Wallet = wallet,
+                WalletId=wallet.Id,
+              
                 Status = WithDrawalStatus.Pending,
 
             };

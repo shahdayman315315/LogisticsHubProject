@@ -180,7 +180,7 @@ namespace LogisticsHub.Infrastructure.Data
 
             });
 
-            modelbuilder.Entity<WithDrawalRequest>().HasOne(wd=>wd.Wallet).WithMany()
+            modelbuilder.Entity<WithDrawalRequest>().HasOne(wd=>wd.Wallet).WithMany(w=>w.WithdrawalRequests)
                 .HasForeignKey(wd=>wd.WalletId).OnDelete(DeleteBehavior.Cascade);
         }
 

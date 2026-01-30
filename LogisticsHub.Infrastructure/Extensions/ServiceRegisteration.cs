@@ -50,6 +50,7 @@ namespace LogisticsHub.Infrastructure.Extensions
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme; 
                 options.DefaultForbidScheme= JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(options=>
             {
@@ -80,6 +81,7 @@ namespace LogisticsHub.Infrastructure.Extensions
             services.AddScoped<ICartService, CartService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<IWithdrawalRequestService, WithdrawalRequestService>();
 
             services.AddHttpContextAccessor();
             services.AddDistributedMemoryCache();

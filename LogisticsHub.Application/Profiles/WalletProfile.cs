@@ -13,8 +13,9 @@ namespace LogisticsHub.Application.Profiles
     {
         public WalletProfile()
         {
-            CreateMap<WalletProfile,WalletDto>().ReverseMap();
+            CreateMap<Wallet,WalletDto>().ReverseMap();
             CreateMap<Transaction, TransactionDto>().ReverseMap();
+            CreateMap<WithDrawalRequest, WithdrawaRequestDto>().ReverseMap();
         }
     }
 }

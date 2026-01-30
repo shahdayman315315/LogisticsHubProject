@@ -10,6 +10,8 @@ namespace LogisticsHub.Application.DTOs
     public class WithdrawaRequestDto
     {
 
+        public int Id { get; set; }
+
         [Required]
         [Range(100,50000)]
         public decimal Amount {  get; set; }
