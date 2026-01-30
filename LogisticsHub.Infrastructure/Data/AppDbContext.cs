@@ -77,8 +77,8 @@ namespace LogisticsHub.Infrastructure.Data
 
                 entity.ToTable(t => t.HasCheckConstraint("CK_StoreCommissionRate", "[CommissionRate] >= 0 AND [CommissionRate] <= 100"));
 
-                entity.HasMany(e=>e.Products).WithOne(p=>p.Store).HasForeignKey(p=>p.StoreId)
-                .OnDelete(DeleteBehavior.Cascade);
+                entity.HasMany(e=>e.Products).WithOne(p=>p.Store).HasForeignKey(p=>p.StoreId).IsRequired(false)
+                .OnDelete(DeleteBehavior.SetNull);
 
             });
 

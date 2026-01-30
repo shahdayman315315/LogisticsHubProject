@@ -4,6 +4,7 @@ using LogisticsHub.Application.Interfaces.Repositories;
 using LogisticsHub.Application.Interfaces.Services;
 using LogisticsHub.Domain.Entities;
 using LogisticsHub.Domain.Enums;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,10 +18,14 @@ namespace LogisticsHub.Infrastructure.ServicesImplementation
     {
 
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IEmailService _emailService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public WithdrawalRequestService(IUnitOfWork unitOfWork)
+        public WithdrawalRequestService(IUnitOfWork unitOfWork, IEmailService emailService, UserManager<ApplicationUser> userManager)
         {
             _unitOfWork = unitOfWork;
+            _emailService = emailService;
+            _userManager = userManager;
         }
 
         public async Task<ServiceResult<WithDrawalRequest>> WithdrawalRequestAsync(string userId, WithdrawaRequestDto request)
@@ -97,6 +102,15 @@ namespace LogisticsHub.Infrastructure.ServicesImplementation
             await _unitOfWork.TransactionRepository.AddAsync(transaction);
             await _unitOfWork.CompleteAsync();
 
+            var user = await _userManager.FindByIdAsync(wallet.UserId);
+            if (user != null && !string.IsNullOrEmpty(user.Email))
+            {
+                var subject = "تحديث بخصوص طلب سحب الرصيد";
+                var body = $"نعتذر منك، تم رفض طلب السحب الخاص بك بمبلغ {withdrawalRequest.Amount}. \nسبب الرفض: {rejectionReason}";
+
+                await _emailService.SendEmailAsync(user.Email, subject, body);
+            }
+
             return ServiceResult<WithDrawalRequest>.Success(withdrawalRequest);
         }
 
@@ -132,6 +146,15 @@ namespace LogisticsHub.Infrastructure.ServicesImplementation
 
             await _unitOfWork.TransactionRepository.AddAsync(transaction);
             await _unitOfWork.CompleteAsync();
+
+            var user = await _userManager.FindByIdAsync(wallet.UserId);
+            if (user != null && !string.IsNullOrEmpty(user.Email))
+            {
+                var subject = "تحديث بخصوص طلب سحب الرصيد";
+                var body = $"عزيزي التاجر، تم الموافقة على طلب السحب الخاص بك بمبلغ {withdrawalRequest.Amount}. رقم العملية: {ExternalReferenceId}";
+
+                await _emailService.SendEmailAsync(user.Email, subject, body);
+            }
 
             return ServiceResult<WithDrawalRequest>.Success(withdrawalRequest);
         }

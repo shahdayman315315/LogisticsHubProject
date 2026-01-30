@@ -15,12 +15,12 @@ namespace LogisticsHub.Presentation.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class PaymentController : ControllerBase
+    public class PaymentsController : ControllerBase
     {
 
         private readonly IPaymentService _paymentService;
         private readonly IUnitOfWork _unitOfWork;
-        public PaymentController(IPaymentService paymentService, IUnitOfWork unitOfWork)
+        public PaymentsController(IPaymentService paymentService, IUnitOfWork unitOfWork)
         {
             _paymentService = paymentService;
             _unitOfWork = unitOfWork;

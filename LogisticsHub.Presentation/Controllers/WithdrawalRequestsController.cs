@@ -13,11 +13,11 @@ namespace LogisticsHub.Presentation.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class WithdrawalRequestController : ControllerBase
+    public class WithdrawalRequestsController : ControllerBase
     {
         private readonly IWithdrawalRequestService _withdrawalRequestService;
         private readonly IMapper _mapper;
-        public WithdrawalRequestController(IWithdrawalRequestService withdrawalRequestService, IMapper mapper)
+        public WithdrawalRequestsController(IWithdrawalRequestService withdrawalRequestService, IMapper mapper)
         {
             _withdrawalRequestService = withdrawalRequestService;
             _mapper = mapper;

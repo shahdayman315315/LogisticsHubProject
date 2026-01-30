@@ -17,7 +17,7 @@ namespace LogisticsHub.Domain.Entities
 
         [Timestamp]
         public byte[] RowVersion { get; set; } = null!;
-        public int StoreId {  get; set; }
+        public int? StoreId {  get; set; }
         public Store? Store { get; set; }
         public int CategoryId {  get; set; }
         public Category? Category { get; set; }

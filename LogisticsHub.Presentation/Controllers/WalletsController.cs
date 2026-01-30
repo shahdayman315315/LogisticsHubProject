@@ -11,12 +11,12 @@ namespace LogisticsHub.Presentation.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class WalletController : ControllerBase
+    public class WalletsController : ControllerBase
     {
 
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
-        public WalletController(IMapper mapper, IUnitOfWork unitOfWork)
+        public WalletsController(IMapper mapper, IUnitOfWork unitOfWork)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
