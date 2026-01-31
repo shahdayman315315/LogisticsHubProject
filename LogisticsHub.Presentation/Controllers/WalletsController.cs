@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using LogisticsHub.Application.DTOs;
-using LogisticsHub.Application.Interfaces.Repositories;
+using LogisticsHub.Infrastructure.Repositories.RepositoriesInterfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

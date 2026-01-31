@@ -1,11 +1,11 @@
 ﻿using LogisticsHub.Application.Helpers;
-using LogisticsHub.Application.Interfaces.Repositories;
-using LogisticsHub.Application.Interfaces.Services;
+using LogisticsHub.Infrastructure.Repositories.RepositoriesInterfaces;
+using LogisticsHub.Application.Services.ServicesInterfaces;
 using LogisticsHub.Domain.Entities;
 using LogisticsHub.Domain.Helpers;
 using LogisticsHub.Infrastructure.Data;
-using LogisticsHub.Infrastructure.RepositoriesImplementation;
-using LogisticsHub.Infrastructure.ServicesImplementation;
+using LogisticsHub.Infrastructure.Repositories.RepositoriesImplementation;
+using LogisticsHub.Application.Services.ServicesImplementation;
 using MailKit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;

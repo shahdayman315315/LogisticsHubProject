@@ -1,5 +1,5 @@
 ﻿using LogisticsHub.Application.DTOs;
-using LogisticsHub.Application.Interfaces.Services;
+using LogisticsHub.Application.Services.ServicesInterfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;

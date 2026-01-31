@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using LogisticsHub.Application.DTOs;
-using LogisticsHub.Application.Interfaces.Services;
+using LogisticsHub.Application.Services.ServicesInterfaces;
 using LogisticsHub.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

@@ -1,8 +1,9 @@
-﻿using LogisticsHub.Application.Interfaces.Repositories;
+﻿using LogisticsHub.Infrastructure.Repositories.RepositoriesInterfaces;
 using LogisticsHub.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace LogisticsHub.Presentation.Controllers
 {
@@ -12,10 +13,15 @@ namespace LogisticsHub.Presentation.Controllers
     public class CategoriesController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
-        public CategoriesController(IUnitOfWork unitOfWork)
+        private readonly IMemoryCache _cache; 
+        private const string CategoriesCacheKey = "AllCategories"; 
+
+        public CategoriesController(IUnitOfWork unitOfWork, IMemoryCache cache)
         {
             _unitOfWork = unitOfWork;
+            _cache = cache;
         }
+
 
         [HttpPost]
         [Authorize(Roles = "Admin,Merchant")]
@@ -36,12 +42,13 @@ namespace LogisticsHub.Presentation.Controllers
             await _unitOfWork.CategoryRepository.AddAsync(newCategory);
             await _unitOfWork.CompleteAsync();
 
+            _cache.Remove(CategoriesCacheKey); 
+
             return Ok(newCategory);
         }
 
 
         [HttpGet("{id}")]
-
         public async Task<IActionResult> GetById(int id)
         {
             var category = await _unitOfWork.CategoryRepository.GetByIdAsync(id);
@@ -59,11 +66,20 @@ namespace LogisticsHub.Presentation.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var categories = await _unitOfWork.CategoryRepository.GetAllAsync();
-
-            if(!categories.Any())
+            if (!_cache.TryGetValue(CategoriesCacheKey, out IEnumerable<Category> categories))
             {
-                return NotFound("No Categories were found");
+                categories = await _unitOfWork.CategoryRepository.GetAllAsync();
+
+                if (!categories.Any())
+                {
+                    return NotFound("No Categories were found");
+                }
+
+                var cacheOptions = new MemoryCacheEntryOptions()
+                    .SetAbsoluteExpiration(TimeSpan.FromHours(1)) 
+                    .SetSlidingExpiration(TimeSpan.FromMinutes(10)); 
+
+                _cache.Set(CategoriesCacheKey, categories, cacheOptions);
             }
 
             return Ok(categories);
@@ -87,6 +103,8 @@ namespace LogisticsHub.Presentation.Controllers
             _unitOfWork.CategoryRepository.Update(category);
             await _unitOfWork.CompleteAsync();
 
+            _cache.Remove(CategoriesCacheKey);
+
             return Ok(category);
         }
 
@@ -105,6 +123,8 @@ namespace LogisticsHub.Presentation.Controllers
 
             _unitOfWork.CategoryRepository.Delete(category);
             await _unitOfWork.CompleteAsync();
+
+            _cache.Remove(CategoriesCacheKey);
 
             return NoContent();
         }

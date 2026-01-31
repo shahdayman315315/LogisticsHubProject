@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
 using LogisticsHub.Application.DTOs;
-using LogisticsHub.Application.Interfaces.Repositories;
+using LogisticsHub.Infrastructure.Repositories.RepositoriesInterfaces;
 using LogisticsHub.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using System.Security.Claims;
 
 namespace LogisticsHub.Presentation.Controllers
@@ -18,10 +19,13 @@ namespace LogisticsHub.Presentation.Controllers
 
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        public StoresController(IUnitOfWork unitOfWork, IMapper mapper)
+        private readonly IMemoryCache _cache; 
+        private const string AllStoresCacheKey = "AllStoresList"; 
+        public StoresController(IUnitOfWork unitOfWork, IMapper mapper,IMemoryCache cache)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
+            _cache = cache;
         }
 
 
@@ -53,10 +57,22 @@ namespace LogisticsHub.Presentation.Controllers
 
                 newStore.MerchantId = merchant.Id;
 
+                _cache.Remove($"Stores_Merchant_{userId}");
+
+            }
+
+            else
+            {
+                var merchant =await _unitOfWork.MerchantRepository.GetByIdAsync(dto.MerchantId);
+                var userforMerchant = merchant.UserId;
+
+                _cache.Remove($"Stores_Merchant_{userforMerchant}");
             }
 
             await _unitOfWork.StoreRepository.AddAsync(newStore);
             await _unitOfWork.CompleteAsync();
+
+            _cache.Remove(AllStoresCacheKey);
 
             return Ok(dto);
         }
@@ -65,38 +81,45 @@ namespace LogisticsHub.Presentation.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            IEnumerable<Store> stores;
-
             var IsAdmin = User.IsInRole("Admin");
 
-            if (!IsAdmin)
+            string cacheKey = IsAdmin ? AllStoresCacheKey : $"Stores_Merchant_{User.FindFirstValue(ClaimTypes.NameIdentifier)}";
+
+            if (!_cache.TryGetValue(cacheKey, out IEnumerable<CreateStoreDto> storesDtos))
             {
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                IEnumerable<Store> stores;
 
-                var merchant = await _unitOfWork.MerchantRepository.GetFirstAsync(m => m.UserId == userId);
+                if (!IsAdmin)
+                {
+                    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    var merchant = await _unitOfWork.MerchantRepository.GetFirstAsync(m => m.UserId == userId);
 
-                if (merchant is null) 
-                    return NotFound("Merchant is not found.");
+                    if (merchant is null)
+                        return NotFound("Merchant is not found.");
 
-                stores=await _unitOfWork.StoreRepository.GetAllAsync(s=>s.MerchantId==merchant.Id);
+                    stores = await _unitOfWork.StoreRepository.GetAllAsync(s => s.MerchantId == merchant.Id);
+                }
+                else
+                {
+                    stores = await _unitOfWork.StoreRepository.GetAllAsync();
+                }
+
+                if (!stores.Any())
+                {
+                    return NotFound("No Stores found");
+                }
+
+                storesDtos = _mapper.Map<IEnumerable<CreateStoreDto>>(stores);
+
+                var cacheOptions = new MemoryCacheEntryOptions()
+                    .SetAbsoluteExpiration(TimeSpan.FromHours(1))
+                    .SetSlidingExpiration(TimeSpan.FromMinutes(10));
+
+                _cache.Set(cacheKey, storesDtos, cacheOptions);
             }
-
-            else
-            {
-                stores = await _unitOfWork.StoreRepository.GetAllAsync();
-
-            }
-
-            if (stores is null)
-            {
-                return NotFound("No Stores is found");
-            }
-
-            var storesDtos = _mapper.Map<IEnumerable<CreateStoreDto>>(stores);
 
             return Ok(storesDtos);
         }
-
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
@@ -140,8 +163,12 @@ namespace LogisticsHub.Presentation.Controllers
             }
 
              _mapper.Map<CreateStoreDto,Store>(dto,existStore );
+
             _unitOfWork.StoreRepository.Update(existStore);
             await _unitOfWork.CompleteAsync();
+
+            _cache.Remove(AllStoresCacheKey);
+            _cache.Remove($"Stores_Merchant_{User.FindFirstValue(ClaimTypes.NameIdentifier)}");
 
             return Ok(existStore);
         }
@@ -160,6 +187,8 @@ namespace LogisticsHub.Presentation.Controllers
 
              _unitOfWork.StoreRepository.Delete(existStore);
             await _unitOfWork.CompleteAsync();
+
+            _cache.Remove(AllStoresCacheKey);
 
             return NoContent();
         }

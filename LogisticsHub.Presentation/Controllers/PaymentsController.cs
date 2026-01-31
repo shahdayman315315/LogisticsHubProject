@@ -1,5 +1,5 @@
-﻿using LogisticsHub.Application.Interfaces.Repositories;
-using LogisticsHub.Application.Interfaces.Services;
+﻿using LogisticsHub.Infrastructure.Repositories.RepositoriesInterfaces;
+using LogisticsHub.Application.Services.ServicesInterfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
